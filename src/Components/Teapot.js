@@ -1,21 +1,56 @@
-import { React, useState, useEffect } from "react";
+// fixed Teapot component
+
+import { useState } from "react";
 import { useGLTF } from "@react-three/drei";
-import { useSnapshot } from "valtio";
+import useHoverCursor from "../hooks/useHoverCursor";
 
-export default function Teapot(props) {
+// Neutral highlight so it doesn't tint the picked color.
+const HOVER_EMISSIVE = "#FFFFFF";
+const SELECT_EMISSIVE = "#FFFFFF";
+
+export default function Teapot({
+  colors = {},
+  updateCurrent,
+  hoveredPart,
+  selectedPart,
+  onHover,
+  ...props
+}) {
   const { nodes } = useGLTF("/Teapot/scene.gltf");
-  const snap = useSnapshot(props.colors);
-  const [hovered, setHovered] = useState(null);
+  const [isPointerOverMesh, setIsPointerOverMesh] = useState(false);
+  const hoveredKey = hoveredPart ?? null;
+  const hoveredColor = hoveredKey ? colors?.[hoveredKey] : null;
+  useHoverCursor(isPointerOverMesh, hoveredKey, hoveredColor);
 
-  useEffect(() => {
-    const cursor = `<svg width="64" height="64" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0)"><path fill="rgba(255, 255, 255, 0.5)" d="M29.5 54C43.031 54 54 43.031 54 29.5S43.031 5 29.5 5 5 15.969 5 29.5 15.969 54 29.5 54z" stroke="#000"/><g filter="url(#filter0_d)"><path d="M29.5 47C39.165 47 47 39.165 47 29.5S39.165 12 29.5 12 12 19.835 12 29.5 19.835 47 29.5 47z" fill="${snap[hovered]}"/></g><path d="M2 2l11 2.947L4.947 13 2 2z" fill="#000"/><text fill="#000" style="white-space:pre" font-family="Inter var, sans-serif" font-size="10" letter-spacing="-.01em"><tspan x="35" y="63">${hovered}</tspan></text></g><defs><clipPath id="clip0"><path fill="#fff" d="M0 0h64v64H0z"/></clipPath><filter id="filter0_d" x="6" y="8" width="47" height="47" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feColorMatrix in="SourceAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"/><feOffset dy="2"/><feGaussianBlur stdDeviation="3"/><feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.15 0"/><feBlend in2="BackgroundImageFix" result="effect1_dropShadow"/><feBlend in="SourceGraphic" in2="effect1_dropShadow" result="shape"/></filter></defs></svg>`;
-    if (hovered) {
-      document.body.style.cursor = `url('data:image/svg+xml;base64,${btoa(
-        cursor
-      )}'), auto`;
+  const isHovered = (key) => hoveredPart === key;
+  const isSelected = (key) => selectedPart === key;
+  const matProps = (partKey) => {
+    const hovered = isHovered(partKey);
+    const selected = isSelected(partKey);
+    return {
+      emissive: selected ? SELECT_EMISSIVE : hovered ? HOVER_EMISSIVE : "#000000",
+      emissiveIntensity: selected ? 0.22 : hovered ? 0.14 : 0,
+      roughness: 0.55,
+      metalness: 0.05,
+    };
+  };
+
+  const handleOver = (e, key) => {
+    e.stopPropagation();
+    setIsPointerOverMesh(true);
+    onHover?.(key);
+  };
+  const handleOut = (e) => {
+    e.stopPropagation();
+    if (e.intersections.length === 0) {
+      setIsPointerOverMesh(false);
+      onHover?.(null);
     }
-    return () => (document.body.style.cursor = "auto");
-  }, [hovered]);
+  };
+  const handleDown = (e, key) => {
+    e.stopPropagation();
+    updateCurrent?.(key);
+  };
 
   return (
     <group
@@ -24,29 +59,38 @@ export default function Teapot(props) {
       scale={[0.01, 0.01, 0.01]}
       position={[0, -0.3, 0]}
       rotation={[0.2, 0.2, -0.2]}
-      onPointerOver={(e) => {
-        e.stopPropagation();
-        setHovered(e.object.material.name);
-      }}
-      onPointerOut={(e) => {
-        if (e.intersections.length === 0) {
-          setHovered(null);
-        }
-      }}
-      onPointerDown={(e) => {
-        e.stopPropagation();
-        props.updateCurrent(e.object.material.name);
-      }}
       onPointerMissed={() => {
-        props.updateCurrent(null);
+        updateCurrent?.(null);
+        onHover?.(null);
+        setIsPointerOverMesh(false);
       }}
     >
       <group rotation={[-Math.PI / 2, 0, 0]}>
-        <mesh castShadow geometry={nodes.Object_2.geometry}>
-          <meshStandardMaterial color={snap.lid} name="lid" />
+        <mesh
+          castShadow
+          geometry={nodes.Object_2.geometry}
+          onPointerOver={(e) => handleOver(e, "lid")}
+          onPointerOut={handleOut}
+          onPointerDown={(e) => handleDown(e, "lid")}
+        >
+          <meshStandardMaterial
+            name="lid"
+            color={colors?.lid ?? "#D3D3D3"}
+            {...matProps("lid")}
+          />
         </mesh>
-        <mesh castShadow geometry={nodes.Object_3.geometry}>
-          <meshStandardMaterial color={snap.base} name="base" />
+        <mesh
+          castShadow
+          geometry={nodes.Object_3.geometry}
+          onPointerOver={(e) => handleOver(e, "base")}
+          onPointerOut={handleOut}
+          onPointerDown={(e) => handleDown(e, "base")}
+        >
+          <meshStandardMaterial
+            name="base"
+            color={colors?.base ?? "#A8A8A8"}
+            {...matProps("base")}
+          />
         </mesh>
       </group>
     </group>

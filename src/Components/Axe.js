@@ -1,21 +1,58 @@
-import { React, useState, useEffect } from "react";
+// fixed Axe model component
+
+import { useState } from "react";
 import { useGLTF } from "@react-three/drei";
-import { useSnapshot } from "valtio";
+import useHoverCursor from "../hooks/useHoverCursor";
 
-export default function Axe(props) {
+// Neutral highlight so it doesn't tint the picked color.
+const HOVER_EMISSIVE = "#FFFFFF";
+const SELECT_EMISSIVE = "#FFFFFF";
+
+export default function Axe({
+  colors = {},
+  updateCurrent,
+  hoveredPart,
+  selectedPart,
+  onHover,
+  ...props
+}) {
   const { nodes } = useGLTF("/Axe/scene.gltf");
-  const snap = useSnapshot(props.colors);
-  const [hovered, setHovered] = useState(null);
+  const [isPointerOverMesh, setIsPointerOverMesh] = useState(false);
+  const hoveredColor = hoveredPart ? colors?.[hoveredPart] : null;
+  useHoverCursor(isPointerOverMesh, hoveredPart, hoveredColor);
 
-  useEffect(() => {
-    const cursor = `<svg width="64" height="64" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0)"><path fill="rgba(255, 255, 255, 0.5)" d="M29.5 54C43.031 54 54 43.031 54 29.5S43.031 5 29.5 5 5 15.969 5 29.5 15.969 54 29.5 54z" stroke="#000"/><g filter="url(#filter0_d)"><path d="M29.5 47C39.165 47 47 39.165 47 29.5S39.165 12 29.5 12 12 19.835 12 29.5 19.835 47 29.5 47z" fill="${snap[hovered]}"/></g><path d="M2 2l11 2.947L4.947 13 2 2z" fill="#000"/><text fill="#000" style="white-space:pre" font-family="Inter var, sans-serif" font-size="10" letter-spacing="-.01em"><tspan x="35" y="63">${hovered}</tspan></text></g><defs><clipPath id="clip0"><path fill="#fff" d="M0 0h64v64H0z"/></clipPath><filter id="filter0_d" x="6" y="8" width="47" height="47" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feColorMatrix in="SourceAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"/><feOffset dy="2"/><feGaussianBlur stdDeviation="3"/><feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.15 0"/><feBlend in2="BackgroundImageFix" result="effect1_dropShadow"/><feBlend in="SourceGraphic" in2="effect1_dropShadow" result="shape"/></filter></defs></svg>`;
-    if (hovered) {
-      document.body.style.cursor = `url('data:image/svg+xml;base64,${btoa(
-        cursor
-      )}'), auto`;
+  const isHovered = (key) => hoveredPart === key;
+  const isSelected = (key) => selectedPart === key;
+  const emissive = (key) => {
+    if (isSelected(key)) return SELECT_EMISSIVE;
+    if (isHovered(key)) return HOVER_EMISSIVE;
+    return "#000000";
+  };
+  const emissiveIntensity = (key) => {
+    const h = isHovered(key);
+    const s = isSelected(key);
+    if (h && s) return 0.26;
+    if (s) return 0.22;
+    if (h) return 0.14;
+    return 0;
+  };
+
+  const handleOver = (e, key) => {
+    e.stopPropagation();
+    setIsPointerOverMesh(true);
+    onHover?.(key);
+  };
+  const handleOut = (e) => {
+    e.stopPropagation();
+    if (e.intersections.length === 0) {
+      setIsPointerOverMesh(false);
+      onHover?.(null);
     }
-    return () => (document.body.style.cursor = "auto");
-  }, [hovered]);
+  };
+  const handleDown = (e, key) => {
+    e.stopPropagation();
+    updateCurrent?.(key);
+  };
 
   return (
     <group
@@ -23,44 +60,124 @@ export default function Axe(props) {
       dispose={null}
       scale={[0.02, 0.02, 0.02]}
       rotation={[-Math.PI / 3 + 0.5, 0, -Math.PI / 2 + 0.3]}
-      onPointerOver={(e) => {
-        e.stopPropagation();
-        setHovered(e.object.material.name);
-      }}
-      onPointerOut={(e) => {
-        if (e.intersections.length === 0) {
-          setHovered(null);
-        }
-      }}
-      onPointerDown={(e) => {
-        e.stopPropagation();
-        props.updateCurrent(e.object.material.name);
-      }}
       onPointerMissed={() => {
-        props.updateCurrent(null);
+        updateCurrent?.(null);
+        onHover?.(null);
+        setIsPointerOverMesh(false);
       }}
     >
       <group rotation={[-Math.PI / 2, 0, 0]}>
-        <mesh castShadow geometry={nodes.Object_2.geometry}>
-          <meshStandardMaterial color={snap.design} name="design" />
+        <mesh
+          castShadow
+          geometry={nodes.Object_2.geometry}
+          onPointerOver={(e) => handleOver(e, "design")}
+          onPointerOut={handleOut}
+          onPointerDown={(e) => handleDown(e, "design")}
+        >
+          <meshStandardMaterial
+            name="design"
+            color={colors?.design ?? "#D3D3D3"}
+            emissive={emissive("design")}
+            emissiveIntensity={emissiveIntensity("design")}
+            roughness={0.55}
+            metalness={0.05}
+          />
         </mesh>
-        <mesh castShadow geometry={nodes.Object_3.geometry}>
-          <meshStandardMaterial color={snap.inner} name="inner" />
+        <mesh
+          castShadow
+          geometry={nodes.Object_3.geometry}
+          onPointerOver={(e) => handleOver(e, "inner")}
+          onPointerOut={handleOut}
+          onPointerDown={(e) => handleDown(e, "inner")}
+        >
+          <meshStandardMaterial
+            name="inner"
+            color={colors?.inner ?? "#D3D3D3"}
+            emissive={emissive("inner")}
+            emissiveIntensity={emissiveIntensity("inner")}
+            roughness={0.55}
+            metalness={0.05}
+          />
         </mesh>
-        <mesh castShadow geometry={nodes.Object_4.geometry}>
-          <meshStandardMaterial color={snap.design} name="design" />
+        <mesh
+          castShadow
+          geometry={nodes.Object_4.geometry}
+          onPointerOver={(e) => handleOver(e, "design")}
+          onPointerOut={handleOut}
+          onPointerDown={(e) => handleDown(e, "design")}
+        >
+          <meshStandardMaterial
+            name="design"
+            color={colors?.design ?? "#D3D3D3"}
+            emissive={emissive("design")}
+            emissiveIntensity={emissiveIntensity("design")}
+            roughness={0.55}
+            metalness={0.05}
+          />
         </mesh>
-        <mesh castShadow geometry={nodes.Object_5.geometry}>
-          <meshStandardMaterial color={snap.support} name="support" />
+        <mesh
+          castShadow
+          geometry={nodes.Object_5.geometry}
+          onPointerOver={(e) => handleOver(e, "support")}
+          onPointerOut={handleOut}
+          onPointerDown={(e) => handleDown(e, "support")}
+        >
+          <meshStandardMaterial
+            name="support"
+            color={colors?.support ?? "#D3D3D3"}
+            emissive={emissive("support")}
+            emissiveIntensity={emissiveIntensity("support")}
+            roughness={0.55}
+            metalness={0.05}
+          />
         </mesh>
-        <mesh castShadow geometry={nodes.Object_6.geometry}>
-          <meshStandardMaterial color={snap.design} name="design" />
+        <mesh
+          castShadow
+          geometry={nodes.Object_6.geometry}
+          onPointerOver={(e) => handleOver(e, "design")}
+          onPointerOut={handleOut}
+          onPointerDown={(e) => handleDown(e, "design")}
+        >
+          <meshStandardMaterial
+            name="design"
+            color={colors?.design ?? "#D3D3D3"}
+            emissive={emissive("design")}
+            emissiveIntensity={emissiveIntensity("design")}
+            roughness={0.55}
+            metalness={0.05}
+          />
         </mesh>
-        <mesh castShadow geometry={nodes.Object_7.geometry}>
-          <meshStandardMaterial color={snap.body} name="body" />
+        <mesh
+          castShadow
+          geometry={nodes.Object_7.geometry}
+          onPointerOver={(e) => handleOver(e, "body")}
+          onPointerOut={handleOut}
+          onPointerDown={(e) => handleDown(e, "body")}
+        >
+          <meshStandardMaterial
+            name="body"
+            color={colors?.body ?? "#A8A8A8"}
+            emissive={emissive("body")}
+            emissiveIntensity={emissiveIntensity("body")}
+            roughness={0.55}
+            metalness={0.05}
+          />
         </mesh>
-        <mesh castShadow geometry={nodes.Object_8.geometry}>
-          <meshStandardMaterial color={snap.design} name="design" />
+        <mesh
+          castShadow
+          geometry={nodes.Object_8.geometry}
+          onPointerOver={(e) => handleOver(e, "design")}
+          onPointerOut={handleOut}
+          onPointerDown={(e) => handleDown(e, "design")}
+        >
+          <meshStandardMaterial
+            name="design"
+            color={colors?.design ?? "#D3D3D3"}
+            emissive={emissive("design")}
+            emissiveIntensity={emissiveIntensity("design")}
+            roughness={0.55}
+            metalness={0.05}
+          />
         </mesh>
       </group>
     </group>

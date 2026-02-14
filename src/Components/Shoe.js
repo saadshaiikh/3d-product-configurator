@@ -1,90 +1,163 @@
-import { React, useState, useEffect } from "react";
+// fixed Shoe model component
+
+import { useState } from "react";
 import { useGLTF } from "@react-three/drei";
-import { useSnapshot } from "valtio";
+import useHoverCursor from "../hooks/useHoverCursor";
 
-export default function Shoe(props) {
+// Neutral highlight so it doesn't tint the picked color.
+const HOVER_EMISSIVE = "#FFFFFF";
+const SELECT_EMISSIVE = "#FFFFFF";
+
+export default function Shoe({
+  colors = {},
+  updateCurrent,
+  hoveredPart,
+  selectedPart,
+  onHover,
+  ...props
+}) {
   const { nodes, materials } = useGLTF("/Shoe/shoe.gltf");
-  const snap = useSnapshot(props.colors);
-  const [hovered, setHovered] = useState(null);
 
-  useEffect(() => {
-    const cursor = `<svg width="64" height="64" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0)"><path fill="rgba(255, 255, 255, 0.5)" d="M29.5 54C43.031 54 54 43.031 54 29.5S43.031 5 29.5 5 5 15.969 5 29.5 15.969 54 29.5 54z" stroke="#000"/><g filter="url(#filter0_d)"><path d="M29.5 47C39.165 47 47 39.165 47 29.5S39.165 12 29.5 12 12 19.835 12 29.5 19.835 47 29.5 47z" fill="${snap[hovered]}"/></g><path d="M2 2l11 2.947L4.947 13 2 2z" fill="#000"/><text fill="#000" style="white-space:pre" font-family="Inter var, sans-serif" font-size="10" letter-spacing="-.01em"><tspan x="35" y="63">${hovered}</tspan></text></g><defs><clipPath id="clip0"><path fill="#fff" d="M0 0h64v64H0z"/></clipPath><filter id="filter0_d" x="6" y="8" width="47" height="47" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feColorMatrix in="SourceAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"/><feOffset dy="2"/><feGaussianBlur stdDeviation="3"/><feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.15 0"/><feBlend in2="BackgroundImageFix" result="effect1_dropShadow"/><feBlend in="SourceGraphic" in2="effect1_dropShadow" result="shape"/></filter></defs></svg>`;
-    if (hovered) {
-      document.body.style.cursor = `url('data:image/svg+xml;base64,${btoa(
-        cursor
-      )}'), auto`;
+  // track pointer over status for custom cursor
+  const [isPointerOverMesh, setIsPointerOverMesh] = useState(false);
+  const hoveredColor = hoveredPart ? colors?.[hoveredPart] : null;
+  useHoverCursor(isPointerOverMesh, hoveredPart, hoveredColor);
+
+  const isHovered = (key) => hoveredPart === key;
+  const isSelected = (key) => selectedPart === key;
+
+  const emissive = (key) => {
+    if (isSelected(key)) return SELECT_EMISSIVE;
+    if (isHovered(key)) return HOVER_EMISSIVE;
+    return "#000000";
+  };
+
+  const emissiveIntensity = (key) => {
+    const h = isHovered(key);
+    const s = isSelected(key);
+    if (h && s) return 0.26;
+    if (s) return 0.22;
+    if (h) return 0.14;
+    return 0;
+  };
+
+  // pointer handlers
+  const handleOver = (e, key) => {
+    e.stopPropagation();
+    setIsPointerOverMesh(true);
+    onHover?.(key);
+  };
+
+  const handleOut = (e) => {
+    e.stopPropagation();
+    if (e.intersections.length === 0) {
+      setIsPointerOverMesh(false);
+      onHover?.(null);
     }
-    return () => (document.body.style.cursor = "auto");
-  }, [hovered]);
+  };
+
+  const handleDown = (e, key) => {
+    e.stopPropagation();
+    updateCurrent?.(key);
+  };
 
   return (
     <group
       {...props}
       dispose={null}
-      onPointerOver={(e) => {
-        e.stopPropagation();
-        setHovered(e.object.material.name);
-      }}
-      onPointerOut={(e) => {
-        if (e.intersections.length === 0) {
-          setHovered(null);
-        }
-      }}
-      onPointerDown={(e) => {
-        e.stopPropagation();
-        props.updateCurrent(e.object.material.name);
-      }}
       onPointerMissed={() => {
-        props.updateCurrent(null);
+        updateCurrent?.(null);
+        onHover?.(null);
+        setIsPointerOverMesh(false);
       }}
     >
       <mesh
         castShadow
-        material-color={snap.laces}
         geometry={nodes.shoe.geometry}
         material={materials.laces}
+        material-color={colors?.laces ?? "#D3D3D3"}
+        material-emissive={emissive("laces")}
+        material-emissiveIntensity={emissiveIntensity("laces")}
+        onPointerOver={(e) => handleOver(e, "laces")}
+        onPointerOut={handleOut}
+        onPointerDown={(e) => handleDown(e, "laces")}
       />
       <mesh
         castShadow
-        material-color={snap.mesh}
         geometry={nodes.shoe_1.geometry}
         material={materials.mesh}
+        material-color={colors?.mesh ?? "#D3D3D3"}
+        material-emissive={emissive("mesh")}
+        material-emissiveIntensity={emissiveIntensity("mesh")}
+        onPointerOver={(e) => handleOver(e, "mesh")}
+        onPointerOut={handleOut}
+        onPointerDown={(e) => handleDown(e, "mesh")}
       />
       <mesh
         castShadow
-        material-color={snap.caps}
         geometry={nodes.shoe_2.geometry}
         material={materials.caps}
+        material-color={colors?.caps ?? "#D3D3D3"}
+        material-emissive={emissive("caps")}
+        material-emissiveIntensity={emissiveIntensity("caps")}
+        onPointerOver={(e) => handleOver(e, "caps")}
+        onPointerOut={handleOut}
+        onPointerDown={(e) => handleDown(e, "caps")}
       />
       <mesh
         castShadow
-        material-color={snap.inner}
         geometry={nodes.shoe_3.geometry}
         material={materials.inner}
+        material-color={colors?.inner ?? "#D3D3D3"}
+        material-emissive={emissive("inner")}
+        material-emissiveIntensity={emissiveIntensity("inner")}
+        onPointerOver={(e) => handleOver(e, "inner")}
+        onPointerOut={handleOut}
+        onPointerDown={(e) => handleDown(e, "inner")}
       />
       <mesh
         castShadow
-        material-color={snap.sole}
         geometry={nodes.shoe_4.geometry}
         material={materials.sole}
+        material-color={colors?.sole ?? "#D3D3D3"}
+        material-emissive={emissive("sole")}
+        material-emissiveIntensity={emissiveIntensity("sole")}
+        onPointerOver={(e) => handleOver(e, "sole")}
+        onPointerOut={handleOut}
+        onPointerDown={(e) => handleDown(e, "sole")}
       />
       <mesh
         castShadow
-        material-color={snap.stripes}
         geometry={nodes.shoe_5.geometry}
         material={materials.stripes}
+        material-color={colors?.stripes ?? "#D3D3D3"}
+        material-emissive={emissive("stripes")}
+        material-emissiveIntensity={emissiveIntensity("stripes")}
+        onPointerOver={(e) => handleOver(e, "stripes")}
+        onPointerOut={handleOut}
+        onPointerDown={(e) => handleDown(e, "stripes")}
       />
       <mesh
         castShadow
-        material-color={snap.band}
         geometry={nodes.shoe_6.geometry}
         material={materials.band}
+        material-color={colors?.band ?? "#D3D3D3"}
+        material-emissive={emissive("band")}
+        material-emissiveIntensity={emissiveIntensity("band")}
+        onPointerOver={(e) => handleOver(e, "band")}
+        onPointerOut={handleOut}
+        onPointerDown={(e) => handleDown(e, "band")}
       />
       <mesh
         castShadow
-        material-color={snap.patch}
         geometry={nodes.shoe_7.geometry}
         material={materials.patch}
+        material-color={colors?.patch ?? "#D3D3D3"}
+        material-emissive={emissive("patch")}
+        material-emissiveIntensity={emissiveIntensity("patch")}
+        onPointerOver={(e) => handleOver(e, "patch")}
+        onPointerOut={handleOut}
+        onPointerDown={(e) => handleDown(e, "patch")}
       />
     </group>
   );
