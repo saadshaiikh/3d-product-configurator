@@ -1,0 +1,179 @@
+          <group
+            position={[-15.64, 6.07, 1.56]}
+            rotation={[1.8, -0.19, -1.12]}
+            scale={[0.27, 0.02, 0.27]}
+          >
+            <mesh
+              castShadow
+              geometry={nodes.pCylinder102_low_lambert1_0.geometry}
+            >
+              <meshStandardMaterial color={snap.shell} name="shell" />
+            </mesh>
+          </group>
+          <group
+            position={[-15.64, 6.13, 1.57]}
+            rotation={[1.8, -0.19, -1.12]}
+            scale={[0.27, 0.02, 0.27]}
+          >
+            <mesh
+              castShadow
+              geometry={nodes.pCylinder103_low_lambert1_0.geometry}
+            >
+              <meshStandardMaterial color={snap.shell} name="shell" />
+            </mesh>
+          </group>
+          <group
+            position={[-15.72, 6.13, 1.47]}
+            rotation={[1.8, -0.19, -1.12]}
+            scale={[0.27, 0.02, 0.27]}
+          >
+            <mesh
+              castShadow
+              geometry={nodes.pCylinder104_low_lambert1_0.geometry}
+            >
+              <meshStandardMaterial color={snap.shell} name="shell" />
+            </mesh>
+          </group>
+          <group
+            position={[-15.72, 6.07, 1.46]}
+            rotation={[1.8, -0.19, -1.12]}
+            scale={[0.27, 0.02, 0.27]}
+          >
+            <mesh
+              castShadow
+              geometry={nodes.pCylinder105_low_lambert1_0.geometry}
+            >
+              <meshStandardMaterial color={snap.shell} name="shell" />
+            </mesh>
+          </group>
+          <group
+            position={[-15.44, 5.79, 1.67]}
+            rotation={[1.8, -0.19, -1.12]}
+            scale={[0.27, 0.02, 0.27]}
+          >
+            <mesh
+              castShadow
+              geometry={nodes.pCylinder106_low_lambert1_0.geometry}
+            >
+              <meshStandardMaterial color={snap.shell} name="shell" />
+            </mesh>
+          </group>
+          <group
+            position={[-15.44, 5.88, 1.65]}
+            rotation={[1.8, -0.19, -1.12]}
+            scale={[0.27, 0.02, 0.27]}
+          >
+            <mesh
+              castShadow
+              geometry={nodes.pCylinder107_low_lambert1_0.geometry}
+            >
+              <meshStandardMaterial color={snap.shell} name="shell" />
+            </mesh>
+          </group>
+          <group
+            position={[-15.44, 5.93, 1.66]}
+            rotation={[1.8, -0.19, -1.12]}
+            scale={[0.27, 0.02, 0.27]}
+          >
+            <mesh
+              castShadow
+              geometry={nodes.pCylinder108_low_lambert1_0.geometry}
+            >
+              <meshStandardMaterial color={snap.shell} name="shell" />
+            </mesh>
+          </group>
+          <group
+            position={[-15.54, 5.93, 1.59]}
+            rotation={[1.8, -0.19, -1.12]}
+            scale={[0.27, 0.02, 0.27]}
+          >
+            <mesh
+              castShadow
+              geometry={nodes.pCylinder109_low_lambert1_0.geometry}
+            >
+              <meshStandardMaterial color={snap.shell} name="shell" />
+            </mesh>
+          </group>
+          <group
+            position={[-15.54, 5.87, 1.57]}
+            rotation={[1.8, -0.19, -1.12]}
+            scale={[0.27, 0.02, 0.27]}
+          >
+            <mesh
+              castShadow
+              geometry={nodes.pCylinder110_low_lambert1_0.geometry}
+            >
+              <meshStandardMaterial color={snap.shell} name="shell" />
+            </mesh>
+          </group>
+          <group
+            position={[-15.54, 5.78, 1.57]}
+            rotation={[1.8, -0.19, -1.12]}
+            scale={[0.27, 0.02, 0.27]}
+          >
+            <mesh
+              castShadow
+              geometry={nodes.pCylinder111_low_lambert1_0.geometry}
+            >
+              <meshStandardMaterial color={snap.shell} name="shell" />
+            </mesh>
+          </group>
+          <group
+            position={[-15.61, 5.85, 1.48]}
+            rotation={[1.8, -0.19, -1.12]}
+            scale={[0.27, 0.02, 0.27]}
+          >
+            <mesh
+              castShadow
+              geometry={nodes.pCylinder112_low_lambert1_0.geometry}
+            >
+              <meshStandardMaterial color={snap.shell} name="shell" />
+            </mesh>
+          </group>
+          <group
+            position={[-15.61, 5.91, 1.5]}
+            rotation={[1.8, -0.19, -1.12]}
+            scale={[0.27, 0.02, 0.27]}
+          >
+            <mesh
+              castShadow
+              geometry={nodes.pCylinder113_low_lambert1_0.geometry}
+            >
+              <meshStandardMaterial color={snap.shell} name="shell" />
+            </mesh>
+          </group>
+          <group
+            position={[-15.69, 5.91, 1.39]}
+            rotation={[1.8, -0.19, -1.12]}
+            scale={[0.27, 0.02, 0.27]}
+          >
+            <mesh
+              castShadow
+              geometry={nodes.pCylinder114_low_lambert1_0.geometry}
+            >
+              <meshStandardMaterial color={snap.shell} name="shell" />
+            </mesh>
+          </group>
+          <group
+            position={[-15.69, 5.85, 1.38]}
+            rotation={[1.8, -0.19, -1.12]}
+            scale={[0.27, 0.02, 0.27]}
+          >
+            <mesh
+              castShadow
+              geometry={nodes.pCylinder115_low_lambert1_0.geometry}
+            >
+              <meshStandardMaterial color={snap.shell} name="shell" />
+            </mesh>
+          </group>
+          <group
+            position={[-25.62, 7.77, -1000.45]}
+            rotation={[0, -Math.PI / 2, 0]}
+          />
+        </group>
+      </group>
+    </group>
+  );
+}
+
+useGLTF.preload("/Insect/scene.gltf");

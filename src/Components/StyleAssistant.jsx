@@ -21,8 +21,8 @@ export default function StyleAssistant({
         value: "bottom grey and inside light blue",
       },
       {
-        label: "stealth: black + dark grey + white accents",
-        value: "stealth: black + dark grey + white accents",
+        label: "stealth: laces black, mesh dark grey, stripes white",
+        value: "stealth: laces black, mesh dark grey, stripes white",
       },
     ],
     []
