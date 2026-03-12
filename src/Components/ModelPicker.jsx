@@ -19,11 +19,11 @@ export default function ModelPicker({
   const [query, setQuery] = useState("");
   const items = useMemo(
     () => [
-      { key: "Shoe", label: "Shoe", img: shoe },
-      { key: "Rocket", label: "Rocket", img: rocket },
-      { key: "Axe", label: "Axe", img: axe },
-      { key: "Insect", label: "Insect", img: insect },
-      { key: "Teapot", label: "Teapot", img: teapot },
+      { key: "shoe", label: "Shoe", img: shoe },
+      { key: "rocket", label: "Rocket", img: rocket },
+      { key: "axe", label: "Axe", img: axe },
+      { key: "insect", label: "Insect", img: insect },
+      { key: "teapot", label: "Teapot", img: teapot },
     ],
     []
   );
@@ -70,29 +70,31 @@ export default function ModelPicker({
 
       <div className="model-dock__list" role="list" aria-label="Models">
         {filtered.map((it) => {
-        const active = selectedModel === it.key;
-        return (
-          <button
-            key={it.key}
-            type="button"
-            className={`model-selector__item${active ? " is-active" : ""}${
-              pulseKey === it.key ? " ui-pulse" : ""
-            }`}
-            onClick={() => pick(it.key)}
-            aria-label={`Select model ${it.label}`}
-            aria-pressed={active}
-            disabled={disabled}
-          >
-            <img src={it.img} alt="" aria-hidden="true" />
-            <div className="model-selector__label">
-              <div className="model-selector__name">{it.label}</div>
-              {active ? <div className="model-selector__sub">Selected</div> : null}
-            </div>
-            <div className="model-selector__check" aria-hidden="true">
-              ✓
-            </div>
-          </button>
-        );
+          const active = selectedModel === it.key;
+          return (
+            <button
+              key={it.key}
+              type="button"
+              className={`model-selector__item${active ? " is-active" : ""}${
+                pulseKey === it.key ? " ui-pulse" : ""
+              }`}
+              onClick={() => pick(it.key)}
+              aria-label={`Select model ${it.label}`}
+              aria-pressed={active}
+              disabled={disabled}
+            >
+              <img src={it.img} alt="" aria-hidden="true" />
+              <div className="model-selector__label">
+                <div className="model-selector__name">{it.label}</div>
+                {active ? (
+                  <div className="model-selector__sub">Selected</div>
+                ) : null}
+              </div>
+              <div className="model-selector__check" aria-hidden="true">
+                ✓
+              </div>
+            </button>
+          );
         })}
       </div>
     </div>

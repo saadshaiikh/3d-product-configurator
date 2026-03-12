@@ -40,7 +40,6 @@ export default function ColorPicker({
   colorsSnapshot = null,
   onPickPart,
   onSetColor,
-  onClearSelection,
   onResetColors,
   labels = {},
   panelKey = null,
@@ -167,16 +166,6 @@ export default function ColorPicker({
                 </button>
               );
             })}
-
-            <button
-              type="button"
-              className="color-card__partBtn color-card__partBtn--ghost"
-              onClick={() => onClearSelection?.()}
-              disabled={!key}
-              title="Clear selected part"
-            >
-              Clear
-            </button>
           </div>
         )}
 

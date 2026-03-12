@@ -4,14 +4,18 @@ export default function StyleAssistant({
   disabled = false,
   status = "",
   onApplyText,
-  onClear,
+  examples: examplesProp = null,
+  placeholder = null,
 }) {
   const [text, setText] = useState("");
 
   const canApply = !disabled && text.trim().length > 0;
 
-  const examples = useMemo(
-    () => [
+  const examples = useMemo(() => {
+    if (Array.isArray(examplesProp) && examplesProp.length > 0) {
+      return examplesProp;
+    }
+    return [
       {
         label: "laces black, mesh white, stripes red",
         value: "laces black, mesh white, stripes red",
@@ -24,9 +28,8 @@ export default function StyleAssistant({
         label: "stealth: laces black, mesh dark grey, stripes white",
         value: "stealth: laces black, mesh dark grey, stripes white",
       },
-    ],
-    []
-  );
+    ];
+  }, [examplesProp]);
 
   const apply = useCallback(
     (override) => {
@@ -52,10 +55,13 @@ export default function StyleAssistant({
 
       <textarea
         className="style-assistant__textarea"
+        data-testid="style-input"
         rows={3}
         value={text}
         onChange={(e) => setText(e.target.value)}
-        placeholder='e.g. "Make the laces black, mesh white, stripes red"'
+        placeholder={
+          placeholder || 'e.g. "Make the laces black, mesh white, stripes red"'
+        }
         aria-label="Style instructions"
         disabled={disabled}
         onKeyDown={(e) => {
@@ -70,21 +76,11 @@ export default function StyleAssistant({
         <button
           type="button"
           className="style-assistant__apply"
+          data-testid="style-apply"
           onClick={() => apply()}
           disabled={!canApply}
         >
           Apply
-        </button>
-        <button
-          type="button"
-          className="style-assistant__clear"
-          onClick={() => {
-            setText("");
-            onClear?.();
-          }}
-          disabled={disabled || !text}
-        >
-          Clear
         </button>
       </div>
 

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useGLTF } from "@react-three/drei";
 import useHoverCursor from "../hooks/useHoverCursor";
+import { useSnapshot } from "valtio";
 
 // Neutral highlight so it doesn't tint the picked color.
 const HOVER_EMISSIVE = "#FFFFFF";
@@ -17,8 +18,9 @@ export default function Insect({
   ...props
 }) {
   const { nodes } = useGLTF("/Insect/scene.gltf");
+  const colorsSnap = useSnapshot(colors);
   const [isPointerOverMesh, setIsPointerOverMesh] = useState(false);
-  const hoveredColor = hoveredPart ? colors?.[hoveredPart] : null;
+  const hoveredColor = hoveredPart ? colorsSnap?.[hoveredPart] : null;
   useHoverCursor(isPointerOverMesh, hoveredPart, hoveredColor);
 
   const isHovered = (key) => hoveredPart === key;
@@ -73,7 +75,7 @@ export default function Insect({
       >
         <meshStandardMaterial
           name="shell"
-          color={colors?.shell ?? "#D3D3D3"}
+          color={colorsSnap?.shell ?? "#D3D3D3"}
           {...matProps("shell")}
         />
       </mesh>
@@ -87,7 +89,7 @@ export default function Insect({
       >
         <meshStandardMaterial
           name="body"
-          color={colors?.body ?? "#D3D3D3"}
+          color={colorsSnap?.body ?? "#D3D3D3"}
           {...matProps("body")}
         />
       </mesh>

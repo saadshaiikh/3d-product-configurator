@@ -166,17 +166,6 @@ code {
   padding-right: 2px;
 }
 
-.mobile-drawer__clear {
-  border: 0;
-  border-radius: 14px;
-  min-height: 44px;
-  padding: 12px 14px;
-  background: rgba(0, 0, 0, 0.08);
-  color: #111;
-  font-size: 13px;
-  font-weight: 650;
-  cursor: pointer;
-}
 
 .mobile-drawer.is-open {
   pointer-events: auto;
@@ -328,8 +317,7 @@ code {
   margin-bottom: 10px;
 }
 
-.style-assistant__apply,
-.style-assistant__clear {
+.style-assistant__apply {
   border: 0;
   border-radius: 12px;
   min-height: 40px;
@@ -344,21 +332,7 @@ code {
   color: rgba(255, 255, 255, 0.92);
 }
 
-.style-assistant__clear {
-  background: rgba(0, 0, 0, 0.08);
-  color: #111;
-}
-
-.style-assistant__clear:hover {
-  background: rgba(0, 0, 0, 0.12);
-}
-
 .style-assistant__apply:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
-}
-
-.style-assistant__clear:disabled {
   opacity: 0.55;
   cursor: not-allowed;
 }
@@ -448,9 +422,9 @@ code {
   backdrop-filter: blur(10px);
 
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
 }
 
 .selection-bar__left {
@@ -460,11 +434,33 @@ code {
   min-width: 0;
 }
 
+.selection-bar__titleRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .selection-bar__title {
   font-size: 14px;
   font-weight: 700;
   color: #111;
   margin: 0;
+}
+
+.selection-bar__ws {
+  font-size: 11px;
+  font-weight: 700;
+  color: #777;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 999px;
+  padding: 2px 8px;
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.selection-bar__ws.is-live {
+  color: #0f172a;
+  background: rgba(16, 185, 129, 0.12);
+  border-color: rgba(16, 185, 129, 0.28);
 }
 
 .selection-bar__row {
@@ -493,7 +489,7 @@ code {
   display: flex;
   gap: 8px;
   align-items: center;
-  flex-shrink: 0;
+  flex-wrap: wrap;
 }
 
 .selection-bar__btn {
@@ -505,6 +501,12 @@ code {
   font-size: 12px;
   cursor: pointer;
   opacity: 0.92;
+  white-space: nowrap;
+}
+
+.selection-bar__btn--accent {
+  background: #111;
+  color: #fff;
 }
 
 .selection-bar__btn:hover {
@@ -519,6 +521,30 @@ code {
 .selection-bar__btn:disabled {
   opacity: 0.45;
   cursor: not-allowed;
+}
+
+/* =========================================================
+   Config deep-link page
+   ========================================================= */
+
+.config-page {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: #ececed;
+}
+
+.config-page__card {
+  width: min(420px, 92vw);
+}
+
+.config-page__actions {
+  margin-top: 12px;
+  display: flex;
+  gap: 8px;
 }
 
 /* =========================================================
@@ -765,29 +791,6 @@ code {
   border-color: rgba(0, 0, 0, 0.35);
 }
 
-.parts-panel__clear {
-  margin-top: 10px;
-  width: 100%;
-  border: none;
-  border-radius: 12px;
-  padding: 10px 12px;
-  cursor: pointer;
-
-  background: rgba(0, 0, 0, 0.08);
-  color: #111;
-  font-size: 12px;
-
-  transition: background 120ms ease, opacity 120ms ease;
-}
-
-.parts-panel__clear:hover {
-  background: rgba(0, 0, 0, 0.12);
-}
-
-.parts-panel__clear:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
-}
 
 .parts-panel__empty {
   font-size: 12px;

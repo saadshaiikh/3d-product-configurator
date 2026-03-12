@@ -81,14 +81,6 @@ export default function PartsPanel({
         )}
       </div>
 
-      <button
-        type="button"
-        className="parts-panel__clear"
-        onClick={() => onSelect(null)}
-        disabled={!current}
-      >
-        Clear selection
-      </button>
     </div>
   );
 }

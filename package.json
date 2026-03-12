@@ -2,6 +2,7 @@
   "name": "product-showcase-3d",
   "version": "0.1.0",
   "private": true,
+  "proxy": "http://localhost:8080",
   "dependencies": {
     "@react-three/drei": "^9.34.3",
     "@react-three/fiber": "^8.8.9",
@@ -9,6 +10,7 @@
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "react": "^18.2.0",
+    "react-router-dom": "^6.22.3",
     "react-colorful": "^5.6.1",
     "react-dom": "^18.2.0",
     "react-icons": "^4.4.0",
@@ -18,8 +20,17 @@
     "valtio": "^1.7.2",
     "web-vitals": "^2.1.4"
   },
+  "devDependencies": {
+    "@playwright/test": "^1.52.0",
+    "concurrently": "^8.2.2",
+    "start-server-and-test": "^2.0.3",
+    "wait-on": "^7.2.0"
+  },
   "scripts": {
     "start": "react-scripts start",
+    "frontend:dev": "react-scripts start",
+    "backend:dev": "cd backend && export DATABASE_URL=\"postgres://app:app@localhost:5432/appdb?sslmode=disable\" && export ADDR=\":8080\" && go run ./cmd/api",
+    "e2e": "concurrently -k -s first -n backend,frontend,test \"npm run backend:dev\" \"npm run frontend:dev\" \"wait-on tcp:8080 tcp:3000 && playwright test\"",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

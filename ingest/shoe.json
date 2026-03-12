@@ -1,0 +1,30 @@
+{
+  "id": "shoe",
+  "displayName": "Shoe",
+  "status": "published",
+  "assets": {
+    "gltf": "model.gltf",
+    "thumb": "thumb.png"
+  },
+  "parts": [
+    {
+      "id": "sole",
+      "displayName": "Sole",
+      "selectable": true,
+      "sortOrder": 1,
+      "defaultColor": "#ffffff",
+      "meshSelectors": ["SoleMesh"]
+    },
+    {
+      "id": "laces",
+      "displayName": "Laces",
+      "selectable": true,
+      "sortOrder": 2,
+      "defaultColor": "#ffffff"
+    }
+  ],
+  "aliases": {
+    "bottom": "sole",
+    "strings": "laces"
+  }
+}

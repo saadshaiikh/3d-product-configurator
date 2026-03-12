@@ -1,0 +1,119 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.24.x"
+      - name: Install sqlc
+        run: go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
+      - name: sqlc generate
+        run: sqlc generate -f sqlc.yaml
+      - name: go vet
+        run: go vet ./...
+      - name: go test
+        run: go test ./...
+      - name: go build
+        run: go build ./cmd/api
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+      - name: npm ci
+        run: npm ci
+      - name: build
+        run: npm run build
+
+  integration:
+    runs-on: ubuntu-latest
+    needs: [backend, frontend]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.24.x"
+      - name: Start db
+        run: docker compose up -d db
+      - name: Run migrations
+        run: docker compose run --rm migrate
+      - name: Start api
+        run: |
+          cd backend
+          export DATABASE_URL="postgres://app:app@localhost:5432/appdb?sslmode=disable"
+          export ADDR=":8080"
+          export STATIC_DIR="../public/static"
+          export FRONTEND_DIR="../build"
+          go run ./cmd/api > /tmp/api.log 2>&1 &
+          echo $! > /tmp/api.pid
+      - name: Wait for api
+        run: |
+          for i in {1..20}; do
+            if curl -s http://localhost:8080/healthz >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "api did not become ready" >&2
+          cat /tmp/api.log || true
+          exit 1
+      - name: Seed
+        run: |
+          cd backend
+          export DATABASE_URL="postgres://app:app@localhost:5432/appdb?sslmode=disable"
+          export ASSET_BASE_URL="http://localhost:8080/static/models"
+          go run ./cmd/seed
+      - name: Validate assets
+        run: |
+          cd backend
+          go run ./cmd/validateassets --base http://localhost:8080/static/models --models shoe
+      - name: Stop api
+        if: always()
+        run: |
+          if [ -f /tmp/api.pid ]; then
+            kill $(cat /tmp/api.pid) || true
+          fi
+
+  e2e:
+    runs-on: ubuntu-latest
+    needs: [integration]
+    if: ${{ env.RUN_E2E == '1' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+      - name: npm ci
+        run: npm ci
+      - name: install playwright
+        run: npx playwright install --with-deps chromium
+      - name: run e2e
+        run: npm run e2e
+      - name: upload playwright artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            playwright-report
+            artifacts

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useGLTF } from "@react-three/drei";
 import useHoverCursor from "../hooks/useHoverCursor";
+import { useSnapshot } from "valtio";
 
 // Neutral highlight so it doesn't tint the picked color.
 const HOVER_EMISSIVE = "#FFFFFF";
@@ -17,8 +18,9 @@ export default function Axe({
   ...props
 }) {
   const { nodes } = useGLTF("/Axe/scene.gltf");
+  const colorsSnap = useSnapshot(colors);
   const [isPointerOverMesh, setIsPointerOverMesh] = useState(false);
-  const hoveredColor = hoveredPart ? colors?.[hoveredPart] : null;
+  const hoveredColor = hoveredPart ? colorsSnap?.[hoveredPart] : null;
   useHoverCursor(isPointerOverMesh, hoveredPart, hoveredColor);
 
   const isHovered = (key) => hoveredPart === key;
@@ -76,7 +78,7 @@ export default function Axe({
         >
           <meshStandardMaterial
             name="design"
-            color={colors?.design ?? "#D3D3D3"}
+            color={colorsSnap?.design ?? "#D3D3D3"}
             emissive={emissive("design")}
             emissiveIntensity={emissiveIntensity("design")}
             roughness={0.55}
@@ -92,7 +94,7 @@ export default function Axe({
         >
           <meshStandardMaterial
             name="inner"
-            color={colors?.inner ?? "#D3D3D3"}
+            color={colorsSnap?.inner ?? "#D3D3D3"}
             emissive={emissive("inner")}
             emissiveIntensity={emissiveIntensity("inner")}
             roughness={0.55}
@@ -108,7 +110,7 @@ export default function Axe({
         >
           <meshStandardMaterial
             name="design"
-            color={colors?.design ?? "#D3D3D3"}
+            color={colorsSnap?.design ?? "#D3D3D3"}
             emissive={emissive("design")}
             emissiveIntensity={emissiveIntensity("design")}
             roughness={0.55}
@@ -124,7 +126,7 @@ export default function Axe({
         >
           <meshStandardMaterial
             name="support"
-            color={colors?.support ?? "#D3D3D3"}
+            color={colorsSnap?.support ?? "#D3D3D3"}
             emissive={emissive("support")}
             emissiveIntensity={emissiveIntensity("support")}
             roughness={0.55}
@@ -140,7 +142,7 @@ export default function Axe({
         >
           <meshStandardMaterial
             name="design"
-            color={colors?.design ?? "#D3D3D3"}
+            color={colorsSnap?.design ?? "#D3D3D3"}
             emissive={emissive("design")}
             emissiveIntensity={emissiveIntensity("design")}
             roughness={0.55}
@@ -156,7 +158,7 @@ export default function Axe({
         >
           <meshStandardMaterial
             name="body"
-            color={colors?.body ?? "#A8A8A8"}
+            color={colorsSnap?.body ?? "#A8A8A8"}
             emissive={emissive("body")}
             emissiveIntensity={emissiveIntensity("body")}
             roughness={0.55}
@@ -172,7 +174,7 @@ export default function Axe({
         >
           <meshStandardMaterial
             name="design"
-            color={colors?.design ?? "#D3D3D3"}
+            color={colorsSnap?.design ?? "#D3D3D3"}
             emissive={emissive("design")}
             emissiveIntensity={emissiveIntensity("design")}
             roughness={0.55}

@@ -1,12 +1,25 @@
 // fixed Shoe model component
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useGLTF } from "@react-three/drei";
 import useHoverCursor from "../hooks/useHoverCursor";
+import { useSnapshot } from "valtio";
 
 // Neutral highlight so it doesn't tint the picked color.
 const HOVER_EMISSIVE = "#FFFFFF";
 const SELECT_EMISSIVE = "#FFFFFF";
+const FALLBACK_COLOR = "#D3D3D3";
+
+const PART_MATERIALS = {
+  laces: "laces",
+  mesh: "mesh",
+  caps: "caps",
+  inner: "inner",
+  sole: "sole",
+  stripes: "stripes",
+  band: "band",
+  patch: "patch",
+};
 
 export default function Shoe({
   colors = {},
@@ -17,10 +30,11 @@ export default function Shoe({
   ...props
 }) {
   const { nodes, materials } = useGLTF("/Shoe/shoe.gltf");
+  const colorsSnap = useSnapshot(colors);
 
   // track pointer over status for custom cursor
   const [isPointerOverMesh, setIsPointerOverMesh] = useState(false);
-  const hoveredColor = hoveredPart ? colors?.[hoveredPart] : null;
+  const hoveredColor = hoveredPart ? colorsSnap?.[hoveredPart] : null;
   useHoverCursor(isPointerOverMesh, hoveredPart, hoveredColor);
 
   const isHovered = (key) => hoveredPart === key;
@@ -40,6 +54,26 @@ export default function Shoe({
     if (h) return 0.14;
     return 0;
   };
+
+  const materialPairs = useMemo(
+    () =>
+      Object.entries(PART_MATERIALS).map(([partKey, matKey]) => ({
+        partKey,
+        matKey,
+      })),
+    []
+  );
+
+  useEffect(() => {
+    if (!materials) return;
+    for (const { partKey, matKey } of materialPairs) {
+      const mat = materials[matKey];
+      if (!mat || !mat.color) continue;
+      const nextColor = colorsSnap?.[partKey] ?? FALLBACK_COLOR;
+      mat.color.set(nextColor);
+      mat.needsUpdate = true;
+    }
+  }, [colorsSnap, materialPairs, materials]);
 
   // pointer handlers
   const handleOver = (e, key) => {

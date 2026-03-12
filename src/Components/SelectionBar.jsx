@@ -2,17 +2,37 @@
 
 import { usePanelEnter } from "../hooks/useUiMotion";
 
-export default function SelectionBar({ modelName, current, labels = {}, onClear, onResetView }) {
+export default function SelectionBar({
+  modelName,
+  current,
+  labels = {},
+  onClear,
+  onResetView,
+  actions = null,
+  wsStatus = "idle",
+}) {
   const visible = usePanelEnter(modelName);
-  // map current part key to user-friendly label if provided
-  const partLabel = current == null ? "None" : (labels[current] || String(current));
+  const partLabel = current == null ? "None" : labels[current] || String(current);
+  const wsLabel = wsStatus === "connected" ? "Live" : "Offline";
   return (
     <div className={`selection-bar panel ${visible ? "panel--visible" : ""}`}>
       <div className="selection-bar__left">
-        <h4 className="selection-bar__title">Selection</h4>
+        <div className="selection-bar__titleRow">
+          <h4 className="selection-bar__title">Selection</h4>
+          <span
+            className={`selection-bar__ws ${
+              wsStatus === "connected" ? "is-live" : ""
+            }`}
+            data-testid="ws-status"
+          >
+            {wsLabel}
+          </span>
+        </div>
         <div className="selection-bar__row">
           <span className="selection-bar__label">Model</span>
-          <span className="selection-bar__value">{modelName}</span>
+          <span className="selection-bar__value" data-testid="selected-model">
+            {modelName}
+          </span>
         </div>
         <div className="selection-bar__row">
           <span className="selection-bar__label">Part</span>
@@ -20,11 +40,11 @@ export default function SelectionBar({ modelName, current, labels = {}, onClear,
         </div>
       </div>
       <div className="selection-bar__actions">
+        {actions}
         <button
           className="selection-bar__btn selection-bar__btn--ghost"
           type="button"
-          onClick={onClear}
-          disabled={!current}
+          onClick={() => onClear?.()}
           title="Clear selected part"
         >
           Clear

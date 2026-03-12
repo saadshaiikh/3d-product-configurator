@@ -1,13 +1,13 @@
 export const MODEL_PARTS = {
-  Shoe: ["laces", "mesh", "caps", "inner", "sole", "stripes", "band", "patch"],
-  Rocket: ["hull", "base", "top", "wings", "window"],
-  Axe: ["design", "inner", "support", "body"],
-  Insect: ["shell", "body"],
-  Teapot: ["lid", "base"],
+  shoe: ["laces", "mesh", "caps", "inner", "sole", "stripes", "band", "patch"],
+  rocket: ["hull", "base", "top", "wings", "window"],
+  axe: ["design", "inner", "support", "body"],
+  insect: ["shell", "body"],
+  teapot: ["lid", "base"],
 };
 
 export const MODEL_ALIASES = {
-  Shoe: {
+  shoe: {
     body: "mesh",
     bottom: "sole",
     outsole: "sole",
@@ -18,23 +18,38 @@ export const MODEL_ALIASES = {
     logos: "stripes",
     band: "band",
     bands: "stripes",
+    lace: "laces",
+    shoelace: "laces",
+    shoelaces: "laces",
   },
-  Rocket: {
+  rocket: {
+    body: "hull",
     tip: "top",
     nose: "top",
+    top: "top",
     fins: "wings",
     fin: "wings",
+    wing: "wings",
+    engine: "base",
+    engines: "base",
+    tail: "base",
   },
-  Axe: {
+  axe: {
     handle: "body",
     head: "design",
+    blade: "design",
+    metal: "design",
+    grip: "support",
   },
-  Insect: {
+  insect: {
     abdomen: "body",
     carapace: "shell",
   },
-  Teapot: {
+  teapot: {
     pot: "base",
+    body: "base",
+    spout: "base",
+    handle: "base",
+    top: "lid",
   },
 };
-

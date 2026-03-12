@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useGLTF } from "@react-three/drei";
 import useHoverCursor from "../hooks/useHoverCursor";
+import { useSnapshot } from "valtio";
 
 // Neutral highlight so it doesn't tint the picked color.
 const HOVER_EMISSIVE = "#FFFFFF";
@@ -17,9 +18,10 @@ export default function Teapot({
   ...props
 }) {
   const { nodes } = useGLTF("/Teapot/scene.gltf");
+  const colorsSnap = useSnapshot(colors);
   const [isPointerOverMesh, setIsPointerOverMesh] = useState(false);
   const hoveredKey = hoveredPart ?? null;
-  const hoveredColor = hoveredKey ? colors?.[hoveredKey] : null;
+  const hoveredColor = hoveredKey ? colorsSnap?.[hoveredKey] : null;
   useHoverCursor(isPointerOverMesh, hoveredKey, hoveredColor);
 
   const isHovered = (key) => hoveredPart === key;
@@ -75,7 +77,7 @@ export default function Teapot({
         >
           <meshStandardMaterial
             name="lid"
-            color={colors?.lid ?? "#D3D3D3"}
+            color={colorsSnap?.lid ?? "#D3D3D3"}
             {...matProps("lid")}
           />
         </mesh>
@@ -88,7 +90,7 @@ export default function Teapot({
         >
           <meshStandardMaterial
             name="base"
-            color={colors?.base ?? "#A8A8A8"}
+            color={colorsSnap?.base ?? "#A8A8A8"}
             {...matProps("base")}
           />
         </mesh>

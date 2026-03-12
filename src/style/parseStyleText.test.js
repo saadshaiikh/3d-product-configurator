@@ -5,8 +5,8 @@ import { COLOR_MAP } from "./colors";
 describe("parseStyleText", () => {
   test("applies simple part-color list", () => {
     const res = parseStyleText("laces black, mesh white, stripes #ff0000", {
-      validParts: MODEL_PARTS.Shoe,
-      aliasMap: MODEL_ALIASES.Shoe,
+      validParts: MODEL_PARTS.shoe,
+      aliasMap: MODEL_ALIASES.shoe,
       colorMap: COLOR_MAP,
     });
 
@@ -17,8 +17,8 @@ describe("parseStyleText", () => {
 
   test("supports aliases bottom->sole and inside->inner", () => {
     const res = parseStyleText("make bottom grey and inside light blue", {
-      validParts: MODEL_PARTS.Shoe,
-      aliasMap: MODEL_ALIASES.Shoe,
+      validParts: MODEL_PARTS.shoe,
+      aliasMap: MODEL_ALIASES.shoe,
       colorMap: COLOR_MAP,
     });
 
@@ -28,8 +28,8 @@ describe("parseStyleText", () => {
 
   test("applies one color to multiple parts", () => {
     const res = parseStyleText("laces and mesh black", {
-      validParts: MODEL_PARTS.Shoe,
-      aliasMap: MODEL_ALIASES.Shoe,
+      validParts: MODEL_PARTS.shoe,
+      aliasMap: MODEL_ALIASES.shoe,
       colorMap: COLOR_MAP,
     });
 
@@ -39,8 +39,8 @@ describe("parseStyleText", () => {
 
   test("unknown part does not crash and is reported", () => {
     const res = parseStyleText("tongue purple", {
-      validParts: MODEL_PARTS.Shoe,
-      aliasMap: MODEL_ALIASES.Shoe,
+      validParts: MODEL_PARTS.shoe,
+      aliasMap: MODEL_ALIASES.shoe,
       colorMap: COLOR_MAP,
     });
 
@@ -50,8 +50,8 @@ describe("parseStyleText", () => {
 
   test("unknown color phrase prevents applying", () => {
     const res = parseStyleText("laces galaxy purple", {
-      validParts: MODEL_PARTS.Shoe,
-      aliasMap: MODEL_ALIASES.Shoe,
+      validParts: MODEL_PARTS.shoe,
+      aliasMap: MODEL_ALIASES.shoe,
       colorMap: COLOR_MAP,
     });
 
@@ -61,11 +61,10 @@ describe("parseStyleText", () => {
 
   test("garbage input never throws", () => {
     const res = parseStyleText("!!! ??? 🤝", {
-      validParts: MODEL_PARTS.Shoe,
-      aliasMap: MODEL_ALIASES.Shoe,
+      validParts: MODEL_PARTS.shoe,
+      aliasMap: MODEL_ALIASES.shoe,
       colorMap: COLOR_MAP,
     });
     expect(res).toBeTruthy();
   });
 });
-
